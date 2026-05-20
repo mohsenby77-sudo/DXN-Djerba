@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DXN Djerba - متجر منتجات DXN الصحية في جربة تونس</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
@@ -1513,8 +1514,7 @@
                 <i class="fas fa-quote-right quote-icon"></i>
                 <div class="testimonial-stars">
                     <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i>
-                    <i class="fas fa-star-half-alt"></i>
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
                 </div>
                 <p>سبيرولينا DXN ساعدتني كثيراً في تحسين مناعتي. شكراً لمحسن على الخدمة الممتازة والتوصيل السريع لصفاقس.</p>
                 <div class="testimonial-author">
@@ -1853,6 +1853,7 @@ localStorage.setItem('dxnVisitors', visitors);
 // ===== RENDER PRODUCTS =====
 function renderProducts(filter = 'all') {
     const grid = document.getElementById('productsGrid');
+    if(!grid) return;
     const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
     grid.innerHTML = filtered.map(product => buildProductCard(product)).join('');
 }
@@ -1953,16 +1954,18 @@ function saveCart() {
 function updateCartUI() {
     const totalQty = cart.reduce((s, i) => s + i.qty, 0);
     const totalPrice = cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    document.getElementById('cartCount').textContent = totalQty;
+    const countEl = document.getElementById('cartCount');
+    if(countEl) countEl.textContent = totalQty;
 
     const cartFooter = document.getElementById('cartFooter');
     const cartItems = document.getElementById('cartItems');
+    if(!cartItems) return;
 
     if(cart.length === 0) {
         cartItems.innerHTML = `<div class="empty-cart"><i class="fas fa-shopping-cart"></i><p>سلة المشتريات فارغة</p></div>`;
-        cartFooter.style.display = 'none';
+        if(cartFooter) cartFooter.style.display = 'none';
     } else {
-        cartFooter.style.display = 'block';
+        if(cartFooter) cartFooter.style.display = 'block';
         cartItems.innerHTML = cart.map(item => `
             <div class="cart-item">
                 <div class="cart-item-image">${item.emoji}</div>
@@ -1980,7 +1983,8 @@ function updateCartUI() {
                 </button>
             </div>
         `).join('');
-        document.getElementById('totalAmount').textContent = totalPrice + ' د.ت';
+        const totalEl = document.getElementById('totalAmount');
+        if(totalEl) totalEl.textContent = totalPrice + ' د.ت';
     }
 }
 
@@ -2022,20 +2026,22 @@ const cartSidebar = document.getElementById('cartSidebar');
 const cartOverlay = document.getElementById('cartOverlay');
 const cartClose = document.getElementById('cartClose');
 
-cartBtn.onclick = () => {
-    cartSidebar.classList.add('active');
-    cartOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-};
+if(cartBtn) {
+    cartBtn.onclick = () => {
+        if(cartSidebar) cartSidebar.classList.add('active');
+        if(cartOverlay) cartOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+}
 
 function closeCart() {
-    cartSidebar.classList.remove('active');
-    cartOverlay.classList.remove('active');
+    if(cartSidebar) cartSidebar.classList.remove('active');
+    if(cartOverlay) cartOverlay.classList.remove('active');
     document.body.style.overflow = '';
 }
 
-cartClose.onclick = closeCart;
-cartOverlay.onclick = closeCart;
+if(cartClose) cartClose.onclick = closeCart;
+if(cartOverlay) cartOverlay.onclick = closeCart;
 
 // ===== WISHLIST =====
 function toggleWishlist(btn) {
@@ -2052,23 +2058,30 @@ function toggleWishlist(btn) {
 // ===== TOAST =====
 function showToast(message) {
     const toast = document.getElementById('toast');
-    document.getElementById('toastMessage').textContent = message;
+    if(!toast) return;
+    const msgEl = document.getElementById('toastMessage');
+    if(msgEl) msgEl.textContent = message;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
 // ===== MOBILE MENU =====
-document.getElementById('mobileToggle').onclick = () => {
-    document.getElementById('navMenu').classList.toggle('active');
-};
+const mobileToggle = document.getElementById('mobileToggle');
+if(mobileToggle) {
+    mobileToggle.onclick = () => {
+        const navMenu = document.getElementById('navMenu');
+        if(navMenu) navMenu.classList.toggle('active');
+    };
+}
 
 // ===== SCROLL =====
 const scrollTopBtn = document.getElementById('scrollTop');
 window.onscroll = () => {
-    document.getElementById('header').classList.toggle('scrolled', window.scrollY > 100);
-    scrollTopBtn.classList.toggle('active', window.scrollY > 100);
+    const header = document.getElementById('header');
+    if(header) header.classList.toggle('scrolled', window.scrollY > 100);
+    if(scrollTopBtn) scrollTopBtn.classList.toggle('active', window.scrollY > 100);
 };
-scrollTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+if(scrollTopBtn) scrollTopBtn.onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
 
 // ===== COUNTDOWN =====
 function startCountdown() {
@@ -2076,10 +2089,15 @@ function startCountdown() {
     end.setDate(end.getDate() + 7);
     setInterval(() => {
         const diff = end - new Date();
-        document.getElementById('days').textContent = String(Math.floor(diff / 86400000)).padStart(2,'0');
-        document.getElementById('hours').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
-        document.getElementById('minutes').textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
-        document.getElementById('seconds').textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
+        const daysEl = document.getElementById('days');
+        const hoursEl = document.getElementById('hours');
+        const minsEl = document.getElementById('minutes');
+        const secsEl = document.getElementById('seconds');
+        
+        if(daysEl) daysEl.textContent = String(Math.floor(diff / 86400000)).padStart(2,'0');
+        if(hoursEl) hoursEl.textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2,'0');
+        if(minsEl) minsEl.textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2,'0');
+        if(secsEl) secsEl.textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2,'0');
     }, 1000);
 }
 
@@ -2103,17 +2121,22 @@ function handleNewsletter(e) {
 }
 
 // ===== SEARCH =====
-document.getElementById('searchInput').oninput = function() {
-    const q = this.value.trim().toLowerCase();
-    if(q.length > 1) {
-        const filtered = products.filter(p => p.name.includes(q) || p.description.includes(q));
-        document.getElementById('productsGrid').innerHTML = filtered.length
-            ? filtered.map(p => buildProductCard(p)).join('')
-            : '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#999">لم يتم العثور على منتجات</div>';
-    } else {
-        renderProducts();
-    }
-};
+const searchInput = document.getElementById('searchInput');
+if(searchInput) {
+    searchInput.oninput = function() {
+        const q = this.value.trim().toLowerCase();
+        const grid = document.getElementById('productsGrid');
+        if(!grid) return;
+        if(q.length > 1) {
+            const filtered = products.filter(p => p.name.includes(q) || p.description.includes(q));
+            grid.innerHTML = filtered.length
+                ? filtered.map(p => buildProductCard(p)).join('')
+                : '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#999">لم يتم العثور على منتجات</div>';
+        } else {
+            renderProducts();
+        }
+    };
+}
 
 // ===== SMOOTH SCROLL =====
 document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -2122,101 +2145,130 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
         if(target) {
             e.preventDefault();
             target.scrollIntoView({ behavior: 'smooth' });
-            document.getElementById('navMenu').classList.remove('active');
+            const navMenu = document.getElementById('navMenu');
+            if(navMenu) navMenu.classList.remove('active');
         }
     });
 });
 
 // ===== ADMIN LOGIN =====
-document.getElementById('adminBtn').onclick = () => {
-    document.getElementById('adminLogin').classList.add('active');
-    document.getElementById('adminOverlay').classList.add('active');
-    document.getElementById('adminPassword').focus();
-};
+const adminBtn = document.getElementById('adminBtn');
+if(adminBtn) {
+    adminBtn.onclick = () => {
+        const loginEl = document.getElementById('adminLogin');
+        const overlayEl = document.getElementById('adminOverlay');
+        const passEl = document.getElementById('adminPassword');
+        if(loginEl) loginEl.classList.add('active');
+        if(overlayEl) overlayEl.classList.add('active');
+        if(passEl) passEl.focus();
+    };
+}
 
-document.getElementById('adminPassword').onkeypress = function(e) {
-    if(e.key === 'Enter') checkAdminPassword();
-};
+const adminPassInput = document.getElementById('adminPassword');
+if(adminPassInput) {
+    adminPassInput.onkeypress = function(e) {
+        if(e.key === 'Enter') checkAdminPassword();
+    };
+}
 
 function checkAdminPassword() {
-    const input = document.getElementById('adminPassword').value;
+    const passInput = document.getElementById('adminPassword');
+    if(!passInput) return;
+    const input = passInput.value;
     const errorMsg = document.getElementById('errorMsg');
     if(input === adminPassword) {
         closeAdminLogin();
         openAdminPanel();
     } else {
-        errorMsg.style.display = 'block';
-        document.getElementById('adminPassword').value = '';
-        document.getElementById('adminPassword').style.borderColor = '#e74c3c';
+        if(errorMsg) errorMsg.style.display = 'block';
+        passInput.value = '';
+        passInput.style.borderColor = '#e74c3c';
         setTimeout(() => {
-            errorMsg.style.display = 'none';
-            document.getElementById('adminPassword').style.borderColor = '';
+            if(errorMsg) errorMsg.style.display = 'none';
+            passInput.style.borderColor = '';
         }, 3000);
     }
 }
 
 function closeAdminLogin() {
-    document.getElementById('adminLogin').classList.remove('active');
-    document.getElementById('adminOverlay').classList.remove('active');
-    document.getElementById('adminPassword').value = '';
-    document.getElementById('errorMsg').style.display = 'none';
+    const loginEl = document.getElementById('adminLogin');
+    const overlayEl = document.getElementById('adminOverlay');
+    const passEl = document.getElementById('adminPassword');
+    const errorMsg = document.getElementById('errorMsg');
+    if(loginEl) loginEl.classList.remove('active');
+    if(overlayEl) overlayEl.classList.remove('active');
+    if(passEl) passEl.value = '';
+    if(errorMsg) errorMsg.style.display = 'none';
 }
 
-document.getElementById('adminOverlay').onclick = closeAdminLogin;
+const adminOverlay = document.getElementById('adminOverlay');
+if(adminOverlay) adminOverlay.onclick = closeAdminLogin;
 
 // ===== ADMIN PANEL =====
 function openAdminPanel() {
-    document.getElementById('adminPanel').classList.add('active');
+    const panel = document.getElementById('adminPanel');
+    if(panel) panel.classList.add('active');
     document.body.style.overflow = 'hidden';
     loadAdminData();
 }
 
 function closeAdminPanel() {
-    document.getElementById('adminPanel').classList.remove('active');
+    const panel = document.getElementById('adminPanel');
+    if(panel) panel.classList.remove('active');
     document.body.style.overflow = '';
 }
 
 function loadAdminData() {
-    // Stats
-    document.getElementById('adminOrderCount').textContent = orders.length;
+    const countEl = document.getElementById('adminOrderCount');
+    const revEl = document.getElementById('adminRevenue');
+    const visEl = document.getElementById('adminVisitors');
+    
+    if(countEl) countEl.textContent = orders.length;
     const totalRevenue = orders.reduce((s, o) => s + o.total, 0);
-    document.getElementById('adminRevenue').textContent = totalRevenue + ' د.ت';
-    document.getElementById('adminVisitors').textContent = visitors;
+    if(revEl) revEl.textContent = totalRevenue + ' د.ت';
+    if(visEl) visEl.textContent = visitors;
 
     // Orders Table
     const tbody = document.getElementById('ordersBody');
-    if(orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#999;padding:30px">لا توجد طلبات بعد</td></tr>`;
-    } else {
-        tbody.innerHTML = orders.slice().reverse().map(o => `
-            <tr>
-                <td>#${o.id}</td>
-                <td style="max-width:200px">${o.items}</td>
-                <td><strong>${o.total} د.ت</strong></td>
-                <td>${o.date}</td>
-                <td><span class="status-badge status-${o.status}">
-                    ${o.status === 'new' ? '🆕 جديد' : o.status === 'pending' ? '⏳ قيد التنفيذ' : '✅ مكتمل'}
-                </span></td>
-            </tr>
-        `).join('');
+    if(tbody) {
+        if(orders.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#999;padding:30px">لا توجد طلبات بعد</td></tr>`;
+        } else {
+            tbody.innerHTML = orders.slice().reverse().map(o => `
+                <tr>
+                    <td>#${o.id}</td>
+                    <td style="max-width:200px">${o.items}</td>
+                    <td><strong>${o.total} د.ت</strong></td>
+                    <td>${o.date}</td>
+                    <td><span class="status-badge status-${o.status}">
+                        ${o.status === 'new' ? '🆕 جديد' : o.status === 'pending' ? '⏳ قيد التنفيذ' : '✅ مكتمل'}
+                    </span></td>
+                </tr>
+            `).join('');
+        }
     }
 
     // Products Grid
-    document.getElementById('adminProductsGrid').innerHTML = products.map(p => `
-        <div class="admin-product-item">
-            <div class="prod-emoji">${p.emoji}</div>
-            <div class="prod-name">${p.name}</div>
-            <div class="prod-price">${p.price} د.ت</div>
-            <input type="number" id="price_${p.id}" value="${p.price}" placeholder="السعر الجديد">
-            <button class="save-price" onclick="updatePrice(${p.id})">
-                <i class="fas fa-save"></i> حفظ
-            </button>
-        </div>
-    `).join('');
+    const adminProdGrid = document.getElementById('adminProductsGrid');
+    if(adminProdGrid) {
+        adminProdGrid.innerHTML = products.map(p => `
+            <div class="admin-product-item">
+                <div class="prod-emoji">${p.emoji}</div>
+                <div class="prod-name">${p.name}</div>
+                <div class="prod-price">${p.price} د.ت</div>
+                <input type="number" id="price_${p.id}" value="${p.price}" placeholder="السعر الجديد">
+                <button class="save-price" onclick="updatePrice(${p.id})">
+                    <i class="fas fa-save"></i> حفظ
+                </button>
+            </div>
+        `).join('');
+    }
 }
 
 function updatePrice(id) {
-    const newPrice = parseFloat(document.getElementById(`price_${id}`).value);
+    const priceInput = document.getElementById(`price_${id}`);
+    if(!priceInput) return;
+    const newPrice = parseFloat(priceInput.value);
     if(isNaN(newPrice) || newPrice <= 0) { showToast('❌ أدخل سعراً صحيحاً'); return; }
     const product = products.find(p => p.id === id);
     if(product) {
@@ -2228,11 +2280,14 @@ function updatePrice(id) {
 }
 
 function saveSettings() {
-    const newPassword = document.getElementById('settingNewPassword').value;
-    if(newPassword.length >= 4) {
-        adminPassword = newPassword;
-        localStorage.setItem('dxnAdminPassword', newPassword);
-        document.getElementById('settingNewPassword').value = '';
+    const newPassInput = document.getElementById('settingNewPassword');
+    if(newPassInput) {
+        const newPassword = newPassInput.value;
+        if(newPassword.length >= 4) {
+            adminPassword = newPassword;
+            localStorage.setItem('dxnAdminPassword', newPassword);
+            newPassInput.value = '';
+        }
     }
     showToast('✅ تم حفظ الإعدادات بنجاح!');
 }
